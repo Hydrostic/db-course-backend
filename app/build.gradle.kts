@@ -40,6 +40,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:0.13.0");
     implementation("org.springframework.security:spring-security-crypto:7.0.2")
     implementation("commons-logging:commons-logging:1.2")
+    implementation("org.projectlombok:lombok:1.18.42")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
