@@ -7,7 +7,9 @@ import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
 import org.LunaTelecom.config.Config;
 import org.LunaTelecom.config.ConfigLoader;
+import org.LunaTelecom.controller.AuthController;
 import org.LunaTelecom.http.ErrorResponse;
+import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.infra.Database;
 import org.tinylog.Logger;
 public class App {
@@ -24,16 +26,18 @@ public class App {
             Logger.error("Failed to do part of initialization, exit {}", e);
             System.exit(1);
         }
-        var app = Javalin.create()
-                .get("/", ctx -> {
-                    throw new Exception("test");
-                });
+        var app = Javalin.create();
+        new AuthController(app);
         app.exception(Exception.class, (exception, ctx) -> {
             var res = new ErrorResponse("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
             Logger.error("Http exception for request {}: {}", res.requestId, exception);
             ctx.json(res)
                    .status(HttpStatus.INTERNAL_SERVER_ERROR);
-        }).error(404, ctx -> {
+        });
+        app.exception(ValidationException.class, (exception, ctx) -> {
+            ctx.json(new ErrorResponse("Validation error", HttpStatus.BAD_REQUEST, exception.getMessage()));
+        });
+        app.error(404, ctx -> {
             ctx.json(new ErrorResponse("Not Found", HttpStatus.NOT_FOUND));
         });
         app.start(7070);

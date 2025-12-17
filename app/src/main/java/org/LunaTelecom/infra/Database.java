@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.LunaTelecom.config.Config;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.mariadb.jdbc.MariaDbDataSource;
 import org.tinylog.Logger;
 
@@ -29,6 +30,7 @@ public class Database {
         hc.setDataSource(ds);
         hc.setMaximumPoolSize(8);
         jdbi = Jdbi.create(new HikariDataSource(hc));
+        jdbi.installPlugin(new SqlObjectPlugin());
     }
 
     public static String getVersion() {

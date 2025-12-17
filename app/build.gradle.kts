@@ -28,10 +28,18 @@ dependencies {
     implementation("io.javalin:javalin:6.7.0")
     implementation(platform("org.jdbi:jdbi3-bom:3.49.6"))
     implementation("org.jdbi:jdbi3-core")
+    implementation("org.jdbi:jdbi3-sqlobject")
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.5.6")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
     implementation("org.yaml:snakeyaml:2.5")
+    implementation("org.hibernate.validator:hibernate-validator:9.1.0.Final")
+    implementation("org.glassfish.expressly:expressly:6.0.0")
+    implementation("io.jsonwebtoken:jjwt-api:0.13.0");
+    implementation("io.jsonwebtoken:jjwt-impl:0.13.0");
+    implementation("io.jsonwebtoken:jjwt-jackson:0.13.0");
+    implementation("org.springframework.security:spring-security-crypto:7.0.2")
+    implementation("commons-logging:commons-logging:1.2")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
