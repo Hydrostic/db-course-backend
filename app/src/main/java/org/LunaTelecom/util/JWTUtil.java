@@ -1,29 +1,34 @@
 package org.LunaTelecom.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
-import java.security.KeyPair;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.AsymmetricJwk;
+import io.jsonwebtoken.security.Keys;
+
+import javax.crypto.SecretKey;
+import java.security.*;
+import java.security.spec.EdDSAParameterSpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Date;
 
 public class JWTUtil {
-    private static final KeyPair key = Jwts.SIG.EdDSA.keyPair().build();
+    private static SecretKey key;
 
-    private static final long EXPIRATION_MS = 60 * 60 * 1000;
 
     /**
      * 生成 JWT Token
      * @param subject 用户标识，userId
      * @return JWT 字符串
      */
-    public static String generateToken(String subject) {
+    public static String generateToken(String subject, long expirationSecs) {
         long now = System.currentTimeMillis();
         return Jwts.builder()
                 .subject(subject)
                 .issuedAt(new Date())
-                .expiration(new Date(now + EXPIRATION_MS))
-                .signWith(key.getPrivate())
+                .expiration(new Date(now + expirationSecs * 1000))
+                .signWith(key)
                 .compact();
     }
 
@@ -35,10 +40,19 @@ public class JWTUtil {
      */
     public static String validateTokenAndGetSubject(String token) throws JwtException {
         Jws<Claims> claimsJws = Jwts.parser()
-                .verifyWith(key.getPublic())
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token);
 
         return claimsJws.getPayload().getSubject();
+    }
+    public static String initConfig(String secret) throws Exception {
+        if (secret == null || secret.isEmpty()) {
+            key = Jwts.SIG.HS256.key().build();
+            return Encoders.BASE64.encode(key.getEncoded());
+        } else {
+            key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+            return secret;
+        }
     }
 }

@@ -25,6 +25,7 @@ public class AdminController extends Controller {
     @Override
     void registerRoutes() {
         app.post("/admin/register", this::registerAdmin);
+        app.post("/admin/delete/{id}", this::deleteAdmin);
     }
 
     private void registerAdmin(Context ctx) {
@@ -52,5 +53,21 @@ public class AdminController extends Controller {
             throw e;
         }
         new SuccessResponse().apply(ctx);
+    }
+    private void deleteAdmin(Context ctx) {
+        long objectId = ctx.pathParamAsClass("id", Long.class).get();
+        var adminDao = jdbi.onDemand(AdminDao.class);
+        var operator = adminDao.findById(ctx.attribute("adminId"));
+        if (operator == null || !operator.isSuperAdmin()) {
+            throw new UnauthorizedResponse("unauthorized");
+        }
+        if (objectId == operator.getId()) {
+            throw new ErrorResponse("cannot delete yourself", HttpStatus.BAD_REQUEST).asException();
+        }
+        if (!adminDao.delete(objectId)) {
+            throw new ErrorResponse("admin not found", HttpStatus.BAD_REQUEST).asException();
+        }
+        new SuccessResponse().apply(ctx);
+
     }
 }

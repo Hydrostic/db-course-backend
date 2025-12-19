@@ -6,6 +6,7 @@ package org.LunaTelecom;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 import org.LunaTelecom.config.Config;
 import org.LunaTelecom.config.ConfigLoader;
 import org.LunaTelecom.controller.AdminController;
@@ -30,7 +31,11 @@ public class App {
             Logger.error("Failed to do part of initialization, exit {}", e);
             System.exit(1);
         }
-        var app = Javalin.create();
+        var app = Javalin.create(jconfig -> {
+            jconfig.bundledPlugins.enableCors(cors -> {
+                cors.addRule(CorsPluginConfig.CorsRule::anyHost);
+            });
+        });
         new AuthController(app);
         new PhoneController(app);
         new AdminController(app);
@@ -42,10 +47,16 @@ public class App {
                    .status(HttpStatus.INTERNAL_SERVER_ERROR);
         });
         app.exception(ValidationException.class, (exception, ctx) -> {
-            ctx.json(new ErrorResponse("Validation error", HttpStatus.BAD_REQUEST, exception.getMessage()));
+            ctx.json(new ErrorResponse("Validation error", HttpStatus.BAD_REQUEST, exception.getMessage()))
+                    .status(HttpStatus.BAD_REQUEST);
+        });
+        app.exception(io.javalin.validation.ValidationException.class, (exception, ctx) -> {
+            ctx.json(new ErrorResponse("Validation error", HttpStatus.BAD_REQUEST, exception.getMessage()))
+                .status(HttpStatus.BAD_REQUEST);
         });
         app.exception(MismatchedInputException.class, (exception, ctx) -> {
-            ctx.json(new ErrorResponse("Malformed request body", HttpStatus.BAD_REQUEST));
+            ctx.json(new ErrorResponse("Malformed request body", HttpStatus.BAD_REQUEST))
+                .status(HttpStatus.BAD_REQUEST);
         });
         app.exception(ErrorResponse.ErrorResponseException.class, (exception, ctx) -> {
             ctx.json(exception.errorResponse)

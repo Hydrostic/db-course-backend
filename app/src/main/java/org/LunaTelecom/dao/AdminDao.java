@@ -32,5 +32,5 @@ public interface AdminDao {
     void update(@BindBean Admin admin);
 
     @SqlUpdate("DELETE FROM admins WHERE id = :id")
-    void delete(@Bind("id") Long id);
+    boolean delete(@Bind("id") Long id);
 }

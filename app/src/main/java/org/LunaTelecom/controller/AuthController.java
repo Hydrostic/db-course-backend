@@ -15,7 +15,7 @@ import org.LunaTelecom.util.JWTUtil;
 import org.LunaTelecom.util.PasswordUtil;
 
 public class AuthController extends Controller {
-
+    private static final int TOKEN_EXPIRATION_SECONDS = 3600; // 1 hour
     public AuthController(Javalin app) {
         super(app, Database.jdbi);
     }
@@ -31,14 +31,12 @@ public class AuthController extends Controller {
         AdminDao adminDao = jdbi.onDemand(AdminDao.class);
         Admin a = adminDao.findByName(loginRequest.username);
         if (a == null) {
-            ctx.json(new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED));
-            return;
+            throw new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED).asException();
         }
         if (!PasswordUtil.verify(loginRequest.password, a.getPassword())) {
-            ctx.json(new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED));
-            return;
+            throw new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED).asException();
         }
-        var token = JWTUtil.generateToken(a.getId().toString());
-        ctx.json(new LoginResponse(token, a.getId(), a.getName()));
+        var token = JWTUtil.generateToken(a.getId().toString(), TOKEN_EXPIRATION_SECONDS);
+        ctx.json(new LoginResponse(token, a.getId(), a.getName(), a.getRole().toString(), TOKEN_EXPIRATION_SECONDS));
     }
 }
