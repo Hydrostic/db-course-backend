@@ -8,7 +8,7 @@ public class ValidatorUtils {
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     public static final Validator validator = factory.getValidator();
 
-    public static <T> void validate(T obj) throws ValidationException {
+    public static <T> void validate(T obj) {
         Set<ConstraintViolation<T>> violations = validator.validate(obj);
 
         if (!violations.isEmpty()) {

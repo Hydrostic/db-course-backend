@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface AdminDao {
 
-    @SqlUpdate("INSERT INTO admins (name, password, created_at, updated_at) VALUES (:name, :password, :createdAt, :updatedAt)")
-    @GetGeneratedKeys
-    Admin insert(@BindBean Admin admin);
+    @SqlUpdate("INSERT INTO admins (name, password, role, created_at, updated_at) VALUES (:name, :password, :role, NOW(), NOW())")
+    @RegisterBeanMapper(Admin.class)
+    void insert(@BindBean Admin admin);
 
     @SqlQuery("SELECT * FROM admins WHERE id = :id")
     @RegisterBeanMapper(Admin.class)
@@ -28,7 +28,7 @@ public interface AdminDao {
     @RegisterBeanMapper(Admin.class)
     List<Admin> findAll();
 
-    @SqlUpdate("UPDATE admins SET name = :name, password = :password, updated_at = :updatedAt WHERE id = :id")
+    @SqlUpdate("UPDATE admins SET name = :name, password = :password, updated_at = NOW() WHERE id = :id")
     void update(@BindBean Admin admin);
 
     @SqlUpdate("DELETE FROM admins WHERE id = :id")

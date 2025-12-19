@@ -4,9 +4,9 @@ import org.hibernate.validator.constraints.Length;
 
 public class LoginRequest {
     @NotBlank
-    @Length(max = 255)
+    @Length(min = 1, max = 50)
     public String username;
     @NotBlank
-    @Length(max = 255)
+    @Length(min = 1, max = 255)
     public String password;
 }

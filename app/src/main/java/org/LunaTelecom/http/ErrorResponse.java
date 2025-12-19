@@ -1,5 +1,6 @@
 package org.LunaTelecom.http;
 
+import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
 import java.util.UUID;
@@ -19,5 +20,19 @@ public class ErrorResponse {
         this.status = status;
         this.requestId = UUID.randomUUID().toString();
         this.content = content;
+    }
+    public static class ErrorResponseException extends RuntimeException {
+        public ErrorResponse errorResponse;
+        public ErrorResponseException(ErrorResponse errorResponse) {
+            this.errorResponse = errorResponse;
+        }
+    }
+
+    public ErrorResponseException asException() {
+        return new ErrorResponseException(this);
+    }
+    public void apply(Context ctx) {
+        ctx.status(this.status);
+        ctx.json(this);
     }
 }

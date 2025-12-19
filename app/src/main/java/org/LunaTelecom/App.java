@@ -3,15 +3,18 @@
  */
 package org.LunaTelecom;
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
 import org.LunaTelecom.config.Config;
 import org.LunaTelecom.config.ConfigLoader;
+import org.LunaTelecom.controller.AdminController;
 import org.LunaTelecom.controller.AuthController;
 import org.LunaTelecom.controller.PhoneController;
 import org.LunaTelecom.http.ErrorResponse;
 import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.infra.Database;
+import org.LunaTelecom.interceptor.AuthInterceptor;
 import org.tinylog.Logger;
 public class App {
     public String getGreeting() {
@@ -30,6 +33,8 @@ public class App {
         var app = Javalin.create();
         new AuthController(app);
         new PhoneController(app);
+        new AdminController(app);
+        new AuthInterceptor(app);
         app.exception(Exception.class, (exception, ctx) -> {
             var res = new ErrorResponse("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
             Logger.error("Http exception for request {}: {}", res.requestId, exception);
@@ -38,6 +43,13 @@ public class App {
         });
         app.exception(ValidationException.class, (exception, ctx) -> {
             ctx.json(new ErrorResponse("Validation error", HttpStatus.BAD_REQUEST, exception.getMessage()));
+        });
+        app.exception(MismatchedInputException.class, (exception, ctx) -> {
+            ctx.json(new ErrorResponse("Malformed request body", HttpStatus.BAD_REQUEST));
+        });
+        app.exception(ErrorResponse.ErrorResponseException.class, (exception, ctx) -> {
+            ctx.json(exception.errorResponse)
+               .status(exception.errorResponse.status);
         });
         app.error(404, ctx -> {
             ctx.json(new ErrorResponse("Not Found", HttpStatus.NOT_FOUND));

@@ -25,7 +25,7 @@ public class AuthController extends Controller {
         app.post("/login", this::handleLogin);
     }
 
-    private void handleLogin(Context ctx) throws ValidationException {
+    private void handleLogin(Context ctx) {
         LoginRequest loginRequest = ctx.bodyAsClass(LoginRequest.class);
         ValidatorUtils.validate(loginRequest);
         AdminDao adminDao = jdbi.onDemand(AdminDao.class);
