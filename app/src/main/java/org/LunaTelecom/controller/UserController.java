@@ -8,9 +8,9 @@ import java.util.Collections;
 import org.LunaTelecom.dao.UserDAO;
 import org.LunaTelecom.dto.common.PagerRequest;
 import org.LunaTelecom.dto.common.PagerResponse;
-import org.LunaTelecom.dto.common.UserCreateRequest;
-import org.LunaTelecom.dto.common.UserDeleteRequest;
-import org.LunaTelecom.dto.common.UserUpdateRequest;
+import org.LunaTelecom.dto.user.UserCreateRequest;
+import org.LunaTelecom.dto.user.UserDeleteRequest;
+import org.LunaTelecom.dto.user.UserUpdateRequest;
 import org.LunaTelecom.http.ErrorResponse;
 import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.http.validator.ValidatorUtils;
@@ -53,8 +53,8 @@ public class UserController extends Controller{
         var now = LocalDateTime.now();
         UserAccount user = new UserAccount();
         // user.setId(IdGenerator.nextId());
-        user.setName(request.getName());
-        user.setIdCard(request.getIdCard());
+        user.setName(request.name);
+        user.setIdCard(request.idCard);
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
 
@@ -76,11 +76,11 @@ public class UserController extends Controller{
             ctx.json(new ErrorResponse("用户不存在", HttpStatus.NOT_FOUND));
         }
 
-        if (request.getName() != null && !request.getName().trim().isEmpty()) {
-            targetUser.setName(request.getName().trim());
+        if (request.name != null && !request.name.trim().isEmpty()) {
+            targetUser.setName(request.name.trim());
         }
-        if (request.getIdCard() != null && !request.getIdCard().trim().isEmpty()) {
-            targetUser.setIdCard(request.getIdCard().trim());
+        if (request.idCard != null && !request.idCard.trim().isEmpty()) {
+            targetUser.setIdCard(request.idCard.trim());
         }
         targetUser.setUpdatedAt(LocalDateTime.now());
         userDao.update(targetUser);
@@ -93,7 +93,7 @@ public class UserController extends Controller{
         ValidatorUtils.validate(request);
 
         var userDao = jdbi.onDemand(UserDAO.class);
-        userDao.delete(request.getId());
+        userDao.delete(request.id);
         ctx.status(200);   
     }
 }

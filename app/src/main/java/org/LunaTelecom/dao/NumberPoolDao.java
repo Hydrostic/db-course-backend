@@ -16,7 +16,6 @@ public interface NumberPoolDao {
     @RegisterBeanMapper(NumberPool.class)
     List<NumberPool> listAll();
 
-
     @SqlQuery("SELECT * FROM number_pools WHERE parent = :parent")
     @RegisterBeanMapper(NumberPool.class)
     List<NumberPool> listByParent(Long parent);
@@ -28,6 +27,13 @@ public interface NumberPoolDao {
     @SqlQuery("SELECT start, end FROM number_pools WHERE parent = :parent OR id = :parent FOR UPDATE")
     @RegisterBeanMapper(NumberPool.class)
     List<NumberPool> listAndLockRelated(Long parent);
+
+    @SqlQuery("SELECT * FROM number_pools WHERE id = :id FOR UPDATE")
+    @RegisterBeanMapper(NumberPool.class)
+    NumberPool listAndLockById(Long id);
+
+    @SqlQuery("SELECT free FROM number_pools WHERE id = :id FOR UPDATE")
+    Long getFreeById(Long id);
 
     @SqlUpdate("INSERT INTO number_pools (name, start, end, free, parent) VALUES (:name, :start, :end, :free, :parent)")
     void insert(NumberPool numberPool);
