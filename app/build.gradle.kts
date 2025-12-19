@@ -32,6 +32,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:7.0.2")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.5.6")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
     implementation("org.yaml:snakeyaml:2.5")
     implementation("org.hibernate.validator:hibernate-validator:9.1.0.Final")
     implementation("org.glassfish.expressly:expressly:6.0.0")

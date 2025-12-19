@@ -6,6 +6,7 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.OkResponse;
 import io.javalin.http.UnauthorizedResponse;
 import org.LunaTelecom.dao.AdminDao;
+import org.LunaTelecom.dto.admin.AdminPublic;
 import org.LunaTelecom.dto.admin.RegisterAdminRequest;
 import org.LunaTelecom.http.ErrorResponse;
 import org.LunaTelecom.http.SuccessResponse;
@@ -24,10 +25,21 @@ public class AdminController extends Controller {
 
     @Override
     void registerRoutes() {
+        app.get("/admin/list", this::listAdmin);
         app.post("/admin/register", this::registerAdmin);
         app.post("/admin/delete/{id}", this::deleteAdmin);
     }
-
+    private void listAdmin(Context ctx) {
+        var adminDao = jdbi.onDemand(AdminDao.class);
+        var operator = adminDao.findById(ctx.attribute("adminId"));
+        if (operator == null || !operator.isSuperAdmin()) {
+            throw new ErrorResponse("unauthorized", HttpStatus.UNAUTHORIZED).asException();
+        }
+        var admins = adminDao.findAll().stream().map(admin -> {
+            return new AdminPublic(admin.getId(), admin.getName(), admin.getRole().toString());
+        }).toList();
+        ctx.json(admins);
+    }
     private void registerAdmin(Context ctx) {
         RegisterAdminRequest req = ctx.bodyAsClass(RegisterAdminRequest.class);
         ValidatorUtils.validate(req);

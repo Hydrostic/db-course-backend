@@ -9,10 +9,7 @@ import io.javalin.http.HttpStatus;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 import org.LunaTelecom.config.Config;
 import org.LunaTelecom.config.ConfigLoader;
-import org.LunaTelecom.controller.AdminController;
-import org.LunaTelecom.controller.AuthController;
-import org.LunaTelecom.controller.PhoneController;
-import org.LunaTelecom.controller.UserController;
+import org.LunaTelecom.controller.*;
 import org.LunaTelecom.http.ErrorResponse;
 import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.infra.Database;
@@ -42,6 +39,7 @@ public class App {
         new PhoneController(app);
         new UserController(app);
         new AdminController(app);
+        new PackageController(app);
         new AuthInterceptor(app);
         app.exception(Exception.class, (exception, ctx) -> {
             var res = new ErrorResponse("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);

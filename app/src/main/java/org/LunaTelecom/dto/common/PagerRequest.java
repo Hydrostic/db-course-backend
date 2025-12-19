@@ -7,7 +7,7 @@ import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.http.validator.ValidatorUtils;
 
 public class PagerRequest {
-    @PositiveOrZero
+    @Positive
     public Integer page;
     @Positive
     public Integer size;
@@ -17,6 +17,6 @@ public class PagerRequest {
         ValidatorUtils.validate(this);
     }
     public long getOffset() {
-        return (long) page * size;
+        return (long) (page - 1) * size;
     }
 }
