@@ -35,11 +35,12 @@ public class App {
                 cors.addRule(CorsPluginConfig.CorsRule::anyHost);
             });
         });
-        new AuthController(app);
-        new PhoneController(app);
-        new UserController(app);
         new AdminController(app);
+        new AuthController(app);
         new PackageController(app);
+        new PhoneController(app);
+        new RecordController(app);
+        new UserController(app);
         new AuthInterceptor(app);
         app.exception(Exception.class, (exception, ctx) -> {
             var res = new ErrorResponse("Unexpected error", HttpStatus.INTERNAL_SERVER_ERROR);
