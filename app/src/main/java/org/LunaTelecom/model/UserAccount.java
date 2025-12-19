@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class UserAccount {
-    private long id;
+    private Long id;
     private String idCard;
     private String name;
     private LocalDateTime createdAt;
