@@ -40,6 +40,9 @@ public class PhoneController extends Controller {
         }
         var phones = phoneDao.listPhoneAccounts(pager.getOffset(), pager.size);
         ctx.json(new PagerResponse<>(phones, pages, pager.size));
+    }
+
+    private void getNewPhoneAccount(Context ctx) throws ValidationException {
 
     }
 
