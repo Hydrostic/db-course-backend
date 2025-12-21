@@ -6,10 +6,23 @@ public class HomeStatsResponse {
     /** total income today in cents */
     public long todayIncome;
 
-    public HomeStatsResponse(long todayNewUsers, long todayNewPhones, long todayIncome) {
+    // New: active phone count (based on today's call count threshold)
+    public long todayActivePhones;
+
+    // New: active phone distribution by province name
+    public java.util.Map<String, Long> activePhonesByProvince;
+
+    // New: monthly package sales stats, key is package name, value is sales count.
+    public java.util.Map<String, Long> monthlyPackageSales;
+
+    public HomeStatsResponse(long todayNewUsers, long todayNewPhones, long todayIncome,
+                             long todayActivePhones, java.util.Map<String, Long> activePhonesByProvince,
+                             java.util.Map<String, Long> monthlyPackageSales) {
         this.todayNewUsers = todayNewUsers;
         this.todayNewPhones = todayNewPhones;
         this.todayIncome = todayIncome;
+        this.todayActivePhones = todayActivePhones;
+        this.activePhonesByProvince = activePhonesByProvince;
+        this.monthlyPackageSales = monthlyPackageSales;
     }
 }
-

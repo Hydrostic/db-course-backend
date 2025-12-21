@@ -67,4 +67,16 @@ public interface PackageDAO {
 
     @SqlUpdate("UPDATE package_to_number SET call_usage = 0, data_usage = 0 WHERE id = :id")
     int resetUsageById(@Bind("id") long id);
+
+    @SqlQuery(
+        "SELECT pkg.name AS package_name, COUNT(*) AS sales " +
+        "FROM package_to_number ptn " +
+        "JOIN packages pkg ON pkg.id = ptn.`package` " +
+        "WHERE ptn.start_at >= :start AND ptn.start_at < :end " +
+        "GROUP BY pkg.name"
+    )
+    @RegisterBeanMapper(org.LunaTelecom.dto.stats.PackageSalesRow.class)
+    List<org.LunaTelecom.dto.stats.PackageSalesRow> countPackageSalesBetween(
+            @Bind("start") LocalDateTime start,
+            @Bind("end") LocalDateTime end);
 }
