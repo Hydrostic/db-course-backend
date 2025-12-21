@@ -10,8 +10,10 @@ import org.LunaTelecom.dto.common.PagerRequest;
 import org.LunaTelecom.dto.common.PagerResponse;
 import org.LunaTelecom.dto.user.UserCreateRequest;
 import org.LunaTelecom.dto.user.UserDeleteRequest;
+import org.LunaTelecom.dto.user.UserPublic;
 import org.LunaTelecom.dto.user.UserUpdateRequest;
 import org.LunaTelecom.http.ErrorResponse;
+import org.LunaTelecom.http.SuccessResponse;
 import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.http.validator.ValidatorUtils;
 import org.LunaTelecom.infra.Database;
@@ -28,19 +30,19 @@ public class UserController extends Controller{
         app.get("/user/list", this::listUserAccounts);
         app.post("/user/create", this::createUserAccounts);
         app.post("/user/update/{id}", this::updateUserAccounts);
-        app.post("/uset/delete/{id}", this::deleteUserAccounts);
+        app.post("/user/delete/{id}", this::deleteUserAccounts);
     }
 
     private void listUserAccounts(Context ctx) throws ValidationException {
         var pager = new PagerRequest(ctx);
         
         var userDao = jdbi.onDemand(UserDAO.class);
-        var pages = userDao.countUserAccounts();
+        var pages = (int)Math.ceil((double)userDao.countUserAccounts() / pager.size);
 
         if (pager.getOffset() >= pages) {
             ctx.json(new PagerResponse<>(Collections.emptyList(), pages, pager.size));
         }
-        var users = userDao.listUsers(pager.getOffset(), pager.size);
+        var users = userDao.listUsers(pager.getOffset(), pager.size).stream().map(UserPublic::new).toList();
         ctx.json(new PagerResponse<>(users, pages, pager.size));
     }
 
@@ -59,8 +61,7 @@ public class UserController extends Controller{
         user.setUpdatedAt(now);
 
         userDao.insert(user);
-
-        ctx.status(200);
+        new SuccessResponse().apply(ctx);
     }
 
     private void updateUserAccounts(Context ctx) throws ValidationException {
@@ -84,16 +85,17 @@ public class UserController extends Controller{
         }
         targetUser.setUpdatedAt(LocalDateTime.now());
         userDao.update(targetUser);
-
-        ctx.status(200);
+        new SuccessResponse().apply(ctx);
     }
 
     private void deleteUserAccounts(Context ctx) throws ValidationException {
-        UserDeleteRequest request = ctx.bodyAsClass(UserDeleteRequest.class);
-        ValidatorUtils.validate(request);
-
+//        UserDeleteRequest request = ctx.bodyAsClass(UserDeleteRequest.class);
+//        ValidatorUtils.validate(request);
+        Long id = ctx.pathParamAsClass("id", Long.class).get();
         var userDao = jdbi.onDemand(UserDAO.class);
-        userDao.delete(request.id);
-        ctx.status(200);   
+        userDao.delete(id);
+        ctx.status(200);
+
+        new SuccessResponse().apply(ctx);
     }
 }

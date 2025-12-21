@@ -6,11 +6,11 @@ import java.time.LocalDateTime;
 
 @Data
 public class Package {
-    private Long id;
+    private long id;
     private String name;
-    private Long price;
-    private Long callAmount;
-    private Long dataAmount;
+    private long price;
+    private long callAmount;
+    private long dataAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class Admin {
-    private Long id;
+    private long id;
     private String name;
     private String password;
     private LocalDateTime createdAt;

@@ -10,7 +10,7 @@ import org.jdbi.v3.sqlobject.customizer.BindBean;
 import java.util.List;
 
 public interface UserDAO {
-    @SqlUpdate("INSERT INTO admins (id_card, name, created_at, updated_at) VALUES (:idCard, :name, :createdAt, :updatedAt)")
+    @SqlUpdate("INSERT INTO users (id_card, name, created_at, updated_at) VALUES (:idCard, :name, :createdAt, :updatedAt)")
     void insert(@BindBean UserAccount user);
 
     @SqlUpdate("UPDATE users SET name = :name, id_card = :idCard, updated_at = :updatedAt WHERE id = :id")
@@ -19,13 +19,16 @@ public interface UserDAO {
     @SqlUpdate("DELETE FROM users WHERE id = :id")
     void delete(@Bind("id") long id);
 
-    @SqlQuery("SELECT COUNT * FROM user")
-    int countUserAccounts();
+    @SqlQuery("SELECT COUNT(*) FROM users")
+    long countUserAccounts();
 
-    @SqlQuery("SELECT * FROM user ORDER BY id LIMIT :offset, :limit")
+    @SqlQuery("SELECT * FROM users ORDER BY id LIMIT :offset, :limit")
     @RegisterBeanMapper(UserAccount.class)
     List<UserAccount> listUsers(@Bind("offset") long offset, @Bind("limit") int limit);
 
-    @SqlQuery("SELECT * FROM user WHERE id = :id")
+    @SqlQuery("SELECT * FROM users WHERE id = :id")
     UserAccount findById(@Bind("id") long id);    
+
+    @SqlQuery("SELECT COUNT(*) FROM users WHERE created_at >= :start AND created_at < :end")
+    long countCreatedBetween(@Bind("start") java.time.LocalDateTime start, @Bind("end") java.time.LocalDateTime end);
 }

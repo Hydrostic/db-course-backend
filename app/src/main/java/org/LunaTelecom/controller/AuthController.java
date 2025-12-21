@@ -36,7 +36,7 @@ public class AuthController extends Controller {
         if (!PasswordUtil.verify(loginRequest.password, a.getPassword())) {
             throw new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED).asException();
         }
-        var token = JWTUtil.generateToken(a.getId().toString(), TOKEN_EXPIRATION_SECONDS);
+        var token = JWTUtil.generateToken(Long.valueOf(a.getId()).toString(), TOKEN_EXPIRATION_SECONDS);
         ctx.json(new LoginResponse(token, a.getId(), a.getName(), a.getRole().toString(), TOKEN_EXPIRATION_SECONDS));
     }
 }

@@ -2,6 +2,7 @@ package org.LunaTelecom.dao;
 
 import org.LunaTelecom.model.NumberPool;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.SqlCall;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
@@ -22,7 +23,7 @@ public interface NumberPoolDao {
 
     @SqlQuery("SELECT * FROM number_pools WHERE id = :id LIMIT 1")
     @RegisterBeanMapper(NumberPool.class)
-    NumberPool findById(Long id);
+    NumberPool findById(@Bind("id") Long id);
 
     @SqlQuery("SELECT start, end FROM number_pools WHERE parent = :parent OR id = :parent FOR UPDATE")
     @RegisterBeanMapper(NumberPool.class)

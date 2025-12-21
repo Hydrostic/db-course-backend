@@ -14,6 +14,7 @@ import org.LunaTelecom.http.ErrorResponse;
 import org.LunaTelecom.http.validator.ValidationException;
 import org.LunaTelecom.infra.Database;
 import org.LunaTelecom.interceptor.AuthInterceptor;
+import org.LunaTelecom.service.MonthEndScheduler;
 import org.tinylog.Logger;
 
 public class App {
@@ -26,6 +27,7 @@ public class App {
         try {
             Database.configure(config.db);
             Logger.info("Database version: {}", Database.getVersion());
+            MonthEndScheduler.start(Database.jdbi);
         } catch (Exception e) {
             Logger.error("Failed to do part of initialization, exit {}", e);
             System.exit(1);
@@ -40,6 +42,8 @@ public class App {
         new PackageController(app);
         new PhoneController(app);
         new RecordController(app);
+        new StatsController(app);
+        new TransactionController(app);
         new UserController(app);
         new AuthInterceptor(app);
         app.exception(Exception.class, (exception, ctx) -> {

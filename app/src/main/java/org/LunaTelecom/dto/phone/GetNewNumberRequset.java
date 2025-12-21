@@ -6,8 +6,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 public class GetNewNumberRequset {
     @PositiveOrZero
     @NotBlank
-    public Long pool;
+    public long pool;
     @PositiveOrZero
     @NotBlank
-    public Long size;
+    public int size;
 }
